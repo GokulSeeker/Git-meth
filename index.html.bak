@@ -8,8 +8,14 @@
 
 <h1>Hello boys!</h1>
 <p>Welcome to Breaking blue meth</p>
+<<<<<<< HEAD
 <p>Let me cook</p>
 <p>HANK-WALT-JESSIE-GUS</p>
+=======
+<div><img src="spaces.jpg" alt="Hello World from Space"
+style="width:100%;max-width:960px"></div>
+<p>Let me cook</p>
+>>>>>>> los-pollos
 
 </body>
 </html>
