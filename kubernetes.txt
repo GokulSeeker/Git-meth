@@ -1,0 +1,277 @@
+Threat Detection and Incident response:
+
+How to retrieve secrets stored in AWS Secrets Manager with AWS Lambda
+Check AWS Resources in Trusted Advisor
+Find vulnerabilities on EC2 instance using Amazon Inspector
+Check the Compliance status of Security group using AWS Config
+Introduction to Amazon GuardDuty
+Create an EventBridge Rule to get notified on EC2 Instance state change using Terraform
+Introduction to AWS Identity Access Management (IAM)
+Query VPC Flow log using Amazon Athena
+Lambda Function to Shut Down and Terminate an EC2 Instance
+Querying Data in S3 with Amazon Athena
+Create S3 Object lock with retention mode as Governance
+Enable deletion protection for Amazon S3 Bucket Using Resource-Based Policy and Object Lock
+Creating an S3 Lifecycle Policy
+Discover sensitive data present in S3 bucket using Amazon Macie
+
+Security Logging and monitoring:
+
+Install CloudWatch Logs Agent on EC2 Instance and View CloudWatch Metrics
+Using CloudWatch for Resource Monitoring, Create CloudWatch Alarms and Dashboards
+AWS Access control alerts with CloudWatch and CloudTrail
+Create a Network Monitoring System Using AWS VPC Flow Logs and CloudWatch
+Configuring a CloudWatch Alarm for Lambda Invocation Errors with SNS Notifications
+Building a Resilient AWS Architecture to withstand hardware failovers and get notified using SNS from scratch
+Creating AWS VPC Flow Logs and Generating Traffic
+Configuring CloudTrail Logs for EC2 Events
+How to enable public access to S3 object
+
+
+Security Infrastructure:
+
+Blocking web traffic with WAF in AWS
+Implementing AWS WAF with ALB to block SQL Injection, Geo Location and Query string
+Understanding AWS ALB Advanced Request Routing
+Understanding AWS ALB Path Based Routing
+Understanding CloudFront Origin Groups
+Creating and configuring a network load balancer in AWS
+Peer VPC with Transit Gateway and its components
+How to implement end to end VPC Endpoint service
+How to setup an AWS Site-to-Site (S2S) VPN Connection
+Understanding and Configuring Layered Security in an AWS VPC
+
+Identity and access management:
+
+Creating a User Pool in AWS Cognito
+Creating IAM Roles
+Creating IAM Policies
+
+Data Protection:
+
+How to Encrypt an S3 bucket using AWS KMS and monitor the activities with CloudTrail
+Access Amazon SQS using Amazon VPC Interface Endpoint
+
+Challenges:
+
+Path Based Routing - AWS ELB Challenge
+Creating a User Pool in AWS Cognito Challenge
+NAT gateway - AWS VPC Challenge
+Setup Cross Region Replication in S3 Challenge
+Creating Events in CloudWatch Challenge
+
+First Restore the snapshot:
+
+root@controlplane:~# ETCDCTL_API=3 etcdctl  --data-dir /var/lib/etcd-from-backup \
+snapshot restore /opt/snapshot-pre-boot.db
+
+
+2022-03-25 09:19:27.175043 I | mvcc: restore compact to 2552
+2022-03-25 09:19:27.266709 I | etcdserver/membership: added member 8e9e05c52164694d [http://localhost:2380] to cluster cdf818194e3a8c32
+root@controlplane:~# 
+
+
+Note: In this case, we are restoring the snapshot to a different directory but in the same server where we took the backup (the controlplane node) As a result, the only required option for the restore command is the --data-dir.
+
+
+
+Next, update the /etc/kubernetes/manifests/etcd.yaml:
+
+We have now restored the etcd snapshot to a new path on the controlplane - /var/lib/etcd-from-backup, so, the only change to be made in the YAML file, is to change the hostPath for the volume called etcd-data from old directory (/var/lib/etcd) to the new directory (/var/lib/etcd-from-backup).
+
+  volumes:
+  - hostPath:
+      path: /var/lib/etcd-from-backup
+      type: DirectoryOrCreate
+    name: etcd-data
+With this change, /var/lib/etcd on the container points to /var/lib/etcd-from-backup on the controlplane (which is what we want).
+
+When this file is updated, the ETCD pod is automatically re-created as this is a static pod placed under the /etc/kubernetes/manifests directory.
+
+
+
+Note 1: As the ETCD pod has changed it will automatically restart, and also kube-controller-manager and kube-scheduler. Wait 1-2 to mins for this pods to restart. You can run the command: watch "crictl ps | grep etcd" to see when the ETCD pod is restarted.
+
+Note 2: If the etcd pod is not getting Ready 1/1, then restart it by kubectl delete pod -n kube-system etcd-controlplane and wait 1 minute.
+
+Note 3: This is the simplest way to make sure that ETCD uses the restored data after the ETCD pod is recreated. You don't have to change anything else.
+
+
+
+If you do change --data-dir to /var/lib/etcd-from-backup in the ETCD YAML file, make sure that the volumeMounts for etcd-data is updated as well, with the mountPath pointing to /var/lib/etcd-from-backup (THIS COMPLETE STEP IS OPTIONAL AND NEED NOT BE DONE FOR COMPLETING THE RESTORE)
+
+
+
+
+Experience working on AWS, Kubernetes Orchestration and EKS.
+Must have 2+ years of Production Env. Experience.
+Exp. with infra-automation using Terraform| CloudFormation | Ansible.
+Exp. working on Linux environment with at least one scripting language.
+Exp. of CI/CD pipeline using Jenkins, Harness l ArgoCD
+Exp. in Application Performance Monitoring tools such as Instana, Grafana, Splunk, PagerDuty, Pingdom and Cloud Watch.
+Good to know and at least hands on experience on Cloud Operation Process and Agile Release Processes, and L2/L3 Ticketing process.
+Should have experience with source control and management tools like Git.
+
+
+
+
+Should be able to work in 24 X 7 shifts for support of infrastructure, Weekly rotational shifts.
+Design, implement and maintain highly available, scalable AWS infrastructure and services within a managed service environment and continual re-evaluation.
+Manage the deployments in env. such as QA/Stage/Production and engaging stack-holders as required, and adhering to SLA (Service Level Agreement)
+Build, Deploy and Manage Kubernetes clusters through automation like Terraform.
+Institute infrastructure as code, security and process automation and automation of routine maintenance tasks
+Security and Vulnerability Patching.
+Create and deliver knowledge-sharing presentations and documentation.
+Learning on the job and exploring new technologies with little supervision.
+Participating and leading war-room/outage calls and ensuring the RCA process is implemented.
+Cross located Team Management to create a self-managed team, support skill development, and provide growth path, performance evaluation, and attrition management.
+Customer Management for daily calls to discuss progress/updates, weekly & monthly status reporting, and lead calls with cross-functional team for creating new services monitors.
+Ability to work with and influence cross-functional teams of customer / eInfochips.
+Delivery Management to ensure well-defined SLAs (Service Level Agreement) and adherence of the same by self/team using delivery tracking tool – JIRA / Confluence.
+Quality Management to contribute that all deliverables from eInfochips are following the quality processes of eInfochips and the customer.
+Documentation of processes/status reporting / SoPs for future reference.
+
+
+-------------------------------------
+Design infrastructure for a static website that is publicly facing. 
+The expectation is that your solution can successfully host a static website upon deployment. 
+You do not have to write website code, just design and build the infrastructure for hosting the solution. 
+We have provided an index.html file for you to use as website content. As you build out your design, please consider good security and networking principles. 
+There is no right way to do this that we are looking for. 
+We are interested in how YOU think and how YOU would create the solution.
+For deliverables for this exercise, we would like to see a diagram (a PDF) of your proposed solution and Terraform code (a zip file of files is fine) that contains the codified version of your solution. 
+You may build this solution for either AWS or Azure. 
+You have 3-4 days for this exercise. 
+After you submit your solution, we will review and the recruiters will get back to you shortly with next steps.
+
+
+(Two approaches)
+Serverless approach - S3 bucket - CDN and ACM. (secure - ACM, JSON bucket policy)
+
+Server approach - TWO EC2 (ngnix) - ACM - ALB.
+Public for bastion and private for EC2 instances
+
+SNS notification with output
+
+Both are integrated with two workspace called - s3workspace and EC2 workspaces
+
+
+resource "aws_s3_bucket_website_configuration" "s3-website" {
+  bucket = aws_s3_bucket.example.id
+
+  index_document {
+    suffix = "index.html"
+  }
+
+-----------------------------
+resource "aws_s3_bucket_ownership_controls" "website" {
+  bucket = aws_s3_bucket.website_bucket.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_acl" "acl-website" {
+  depends_on = [aws_s3_bucket_ownership_controls.website]
+
+  bucket = aws_s3_bucket.website_bucket.id
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_object" "index" {
+  bucket = "aws_s3_bucket.website_bucket.id"
+  key    = "index.html"
+  source = "./index.html"
+  server_side_encryption = "aws:kms"
+}
+
+resource "aws_s3_bucket_object" "example" {
+  key                    = "someobject"
+  bucket                 = aws_s3_bucket.examplebucket.id
+  source                 = "index.html"
+  server_side_encryption = "aws:kms"
+}
+
+
+resource "aws_cloudfront_distribution" "website_distribution" {
+  origin {
+    domain_name = aws_s3_bucket.website_bucket.website_domain
+    origin_id   = aws_s3_bucket.website_bucket.bucket_regional_domain_name
+  }
+
+  enabled             = true
+  is_ipv6_enabled     = true
+  comment             = "CDN distribution for the static website"
+  default_root_object = "index.html"
+
+  aliases = [var.website_domain]
+  
+  
+locals {
+  s3_origin_id = "myS3Origin"
+}
+
+resource "aws_cloudfront_distribution" "s3_distribution" {
+  origin {
+    domain_name              = aws_s3_bucket.website_bucket.bucket_regional_domain_name
+    origin_access_control_id = aws_cloudfront_origin_access_control.default.id
+    origin_id                = local.s3_origin_id
+  }
+
+
+default_cache_behavior {
+  allowed_methods  = ["GET", "HEAD"]
+  cached_methods   = ["GET", "HEAD"]
+  
+  -----------------------------------------------
+  
+# CloudFront Origin Access Identity
+###################################
+resource "aws_cloudfront_origin_access_identity" "s3website" {
+  comment = "s3website"
+}
+  
+###################################
+# IAM Policy Document
+###################################
+data "aws_iam_policy_document" "website_bucket" {
+  statement {
+    actions   = ["s3:GetObject"]
+    resources = ["${aws_s3_bucket.website_bucket.arn}/*"]
+
+    principals {
+      type        = "AWS"
+      identifiers = [aws_cloudfront_origin_access_identity.s3website.iam_arn]
+    }
+  }
+
+  statement {
+    actions   = ["s3:ListBucket"]
+    resources = [aws_s3_bucket.website_bucket.arn]
+
+    principals {
+      type        = "AWS"
+      identifiers = [aws_cloudfront_origin_access_identity.s3website.iam_arn]
+    }
+  }
+}
+
+----------------------
+###################################
+# IAM Policy Document
+###################################
+resource "aws_s3_bucket_policy" "public_read_policy" {
+  bucket = aws_s3_bucket.website_bucket.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect    = "Allow",
+        Principal = "*",
+        Action    = "s3:GetObject",
+        Resource  = "${aws_s3_bucket.website_bucket.arn}/*",
+      },
+    ],
+  })
+}
